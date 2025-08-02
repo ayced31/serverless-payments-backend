@@ -4,13 +4,15 @@ import { Env } from "../config/env";
 
 type JwtPayload = {
   sub: string;
+  iat: number;
+  exp: number;
 };
 
 type Variables = {
   userId: string;
 };
 
-export const authMiddlware: MiddlewareHandler<{
+export const authMiddleware: MiddlewareHandler<{
   Bindings: Env;
   Variables: Variables;
 }> = async (c, next) => {
