@@ -1,11 +1,15 @@
 import { MongoClient, Db } from "mongodb";
 import { Env } from "../config/env";
 
-// variable = null, that can be Db or null
-let cachedDb: Db | null = null;
+interface DatabaseConnection {
+  client: MongoClient;
+  db: Db;
+}
 
-export async function connectToDatabase(env: Env): Promise<Db> {
-  if (cachedDb) return cachedDb;
+let cachedConnection: DatabaseConnection | null = null;
+
+export async function connectToDatabase(env: Env): Promise<DatabaseConnection> {
+  if (cachedConnection) return cachedConnection;
 
   const client = new MongoClient(env.DB_URI);
 
@@ -15,8 +19,8 @@ export async function connectToDatabase(env: Env): Promise<Db> {
 
     const db = client.db(env.DB_NAME);
 
-    cachedDb = db;
-    return db;
+    cachedConnection = { client, db };
+    return cachedConnection;
   } catch (error) {
     console.error("Failed to connect to MongoDB", error);
     // rethrow error so the calling func knows smth went wrong
